@@ -1,0 +1,4 @@
+Run this to try loading a serviceworker:
+```
+navigator.serviceWorker.register("filesystem:https://example.com/script.js")
+```

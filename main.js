@@ -1,5 +1,19 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, protocol} = require('electron')
+
+// NOTE(ibash) this is not needed as we pass a switch on the command line:
+// --service-worker-schemes="filesystem"
+// In fact, registerSchemesAsPrivileged does not work for our purposes since it
+// doesn't enable service workers for the filesystem scheme for all processes.
+//
+// protocol.registerSchemesAsPrivileged([
+//   {
+//     scheme: 'filesystem',
+//     privileges: {
+//       allowServiceWorkers: true,
+//     }
+//   },
+// ])
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -11,15 +25,27 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      //webSecurity: false
     }
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  //mainWindow.loadFile('index.html')
+
+  // NOTE(ibash) since github has CSP it can't load the service worker file for
+  // github.com, but there are mechanisms to change these headers
+  //mainWindow.loadURL('https://github.com')
+  mainWindow.loadURL('https://example.com')
+
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
+  mainWindow.webContents.on('crashed', function(event, killed) {
+    console.log('CRASHED!')
+    console.log(event)
+    console.log(killed)
+  })
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
