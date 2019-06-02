@@ -1,5 +1,6 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, protocol} = require('electron')
+const fs = require('fs')
 
 // NOTE(ibash) this is not needed as we pass a switch on the command line:
 // --service-worker-schemes="filesystem"
@@ -37,6 +38,11 @@ function createWindow () {
   // github.com, but there are mechanisms to change these headers
   //mainWindow.loadURL('https://github.com')
   mainWindow.loadURL('https://example.com')
+
+  const js = fs.readFileSync('./service-worker-loader.js', {encoding: 'utf8'})
+  mainWindow.webContents.on('did-finish-load', function() {
+    mainWindow.webContents.executeJavaScript(js);
+  });
 
 
   // Open the DevTools.
